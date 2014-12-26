@@ -1,5 +1,8 @@
-var Mixer = {playing:false};
-
+var Mixer = {
+    playing:false,
+    stems: ['gagaVox','gagaPerc','gagaSynth1'],
+};
+// Looped playback - probably should be disabled
 Mixer.playAll = function(allBuffers) {
     var len = allBuffers.length;
     this.ctls = [];
@@ -37,7 +40,11 @@ Mixer.playAll = function(allBuffers) {
 
 Mixer.play = function() {
   // Create two sources.
-  var buffs = [BUFFERS.drums,BUFFERS.organ];
+  var buffs = [];
+  for (var i = 0 ; i < this.stems.length ; i++){
+    buffs.push(BUFFERS[this.stems[i]]);
+  }
+  var buffs = [BUFFERS.gagaVox, BUFFERS.gagaPerc, BUFFERS.gagaSynth1];
   this.playAll(buffs);
 };
 
@@ -68,3 +75,11 @@ Mixer.toggle = function() {
   this.playing ? this.stop() : this.play();
   this.playing = !this.playing;
 };
+
+Mixer.init = function() {
+    var outStr = '<p><input type="button" onclick="Mixer.toggle();" value="Play/Pause"/></p>';
+    for (var i = 0 ; i < this.stems.length ; i++){
+        outStr = outStr + '<p>' + this.stems[i] + '<input type="range" min="0" max="100" value="50" oninput="Mixer.changeVol(this,' + String(i) + ');" /> </p>';
+    }
+    $('#mixer').html(outStr);
+}

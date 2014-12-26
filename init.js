@@ -10,7 +10,10 @@ var BUFFERS_TO_LOAD = {
   hihat: 'sounds/hihat.wav',
   drums: 'sounds/blueyellow.wav',
   organ: 'sounds/organ-echo-chords.wav',
-  techno: 'sounds/techno.wav'
+  techno: 'sounds/techno.wav',
+  gagaVox: 'gaga/paparazzi/LeadVocals.mp3',
+  gagaPerc: 'gaga/paparazzi/Percussions.mp3',
+  gagaSynth1: 'gaga/paparazzi/Synth1.mp3'
 };
 
 // Loads all sound samples into the buffers object.

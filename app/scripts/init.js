@@ -26,6 +26,7 @@ function loadBuffers() {
       var name = names[i];
       BUFFERS[name] = buffer;
     }
+    $('#playBtn').removeAttr('disabled');
   });
   bufferLoader.load();
 }
@@ -41,3 +42,4 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   loadBuffers();
 });
+

@@ -1,5 +1,7 @@
 var Mixer = {
     playing:false,
+    startOffset:0,
+    startTime:0,
 };
 // Looped playback - probably should be disabled
 Mixer.playAll = function(allBuffers) {
@@ -16,7 +18,7 @@ Mixer.playAll = function(allBuffers) {
         }
     } else{
         for (var i=0 ; i < len ; i++){
-            this.ctls[i].source.start(0);
+            this.ctls[i].source.start(0,this.startOffset % allBuffers[i].duration );
         }
     }
     function createSource(buffer) {
@@ -43,12 +45,14 @@ Mixer.play = function() {
   for (var i = 0 ; i < this.stems.length ; i++){
     buffs.push(BUFFERS[this.stems[i]]);
   }
-  var buffs = [BUFFERS.gagaVox, BUFFERS.gagaPerc, BUFFERS.gagaSynth1];
+  // Set time to resume play;
+  this.startTime = context.currentTime;
   this.playAll(buffs);
 };
 
 Mixer.stopAll = function() {
   var len = this.ctls.length;
+  this.startOffset += context.currentTime - this.startTime;
   if (!this.ctls[0]) {
     for (var i = 0 ; i < len ; i++){
         this.ctls[i].source.noteOff(0);
@@ -77,7 +81,8 @@ Mixer.toggle = function() {
 
 Mixer.init = function(stems) {
     this.stems = stems;
-    var outStr = '<p><input type="button" onclick="Mixer.toggle();" value="Play/Pause"/></p>';
+    // Set as disabled until loaded
+    var outStr = '<p><input type="button" id="playBtn" onclick="Mixer.toggle();" value="Play/Pause" disabled/></p>';
     for (var i = 0 ; i < this.stems.length ; i++){
         outStr = outStr + '<p>' + this.stems[i] + '<input type="range" min="0" max="100" value="50" oninput="Mixer.changeVol(this,' + String(i) + ');" /> </p>';
     }

@@ -5,7 +5,7 @@ CrossfadeSample.play = function() {
   this.ctl1 = createSource(BUFFERS.drums);
   this.ctl2 = createSource(BUFFERS.organ);
   // Mute the second source.
-  this.ctl1.gainNode.gain.value = 0;
+  this.ctl1.gainNode.gain.value = .5;
   // Start playback in a loop
   if (!this.ctl1.source.start) {
     this.ctl1.source.noteOn(0);
@@ -53,6 +53,16 @@ CrossfadeSample.crossfade = function(element) {
   this.ctl2.gainNode.gain.value = gain2;
 };
 
+CrossfadeSample.increase1 = function(element) {
+    var x = parseInt(element.value) / parseInt(element.max);
+    var gain = Math.cos((1-x) * .5*Math.PI);
+    this.ctl1.gainNode.gain.value = gain;
+}
+CrossfadeSample.increase2 = function(element) {
+    var x = parseInt(element.value) / parseInt(element.max);
+    var gain = Math.cos((1-x) * .5*Math.PI);
+    this.ctl2.gainNode.gain.value = gain;
+}
 CrossfadeSample.toggle = function() {
   this.playing ? this.stop() : this.play();
   this.playing = !this.playing;

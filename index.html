@@ -13,5 +13,8 @@
     <p> Synth <input type="range" min="0" max="100" value="50" oninput="Mixer.changeVol(this, 2);"/> </p>
     -->
     <div id="mixer" class="mixer"> </div>
-    <script>Mixer.init();</script>
+    <script>
+        var stems = ['gagaVox','gagaPerc','gagaSynth1'];
+        Mixer.init(stems);
+    </script>
 </body>

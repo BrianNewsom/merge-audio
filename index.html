@@ -1,12 +1,11 @@
 <!DOCTYPE html PUBLIC>
 <head>
     <script src="buffer-loader.js"></script>
-    <script src="crossfade-sample.js"></script>
+    <script src="mixer.js"></script>
     <script src="init.js"></script>
 </head>
 <body>
-    <p>The following demo contains two wav files and allows mixing of them <code>&lt;input type="range"&gt;</code> </p>
-    <p><input type="button" onclick="CrossfadeSample.toggle();" value="Play/Pause"/>
-    Drums <input type="range" min="0" max="100" value="50" oninput="CrossfadeSample.increase1(this);" /> </p>
-    <p> Organ <input type="range" min="0" max="100" value="50" oninput="CrossfadeSample.increase2(this);"/> </p>
+    <p><input type="button" onclick="Mixer.toggle();" value="Play/Pause"/></p>
+    <p>Drums <input type="range" min="0" max="100" value="50" oninput="Mixer.changeVol(this, 0);" /> </p>
+    <p> Organ <input type="range" min="0" max="100" value="50" oninput="Mixer.changeVol(this, 1);"/> </p>
 </body>

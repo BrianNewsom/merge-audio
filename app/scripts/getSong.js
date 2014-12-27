@@ -6,7 +6,6 @@ query = new Parse.Query('Track')
 query.equalTo('name', trackName);
 query.find({
     success:function(res) {
-        console.log(res);
         // If song doesn't exist give empty array for stems
         var stems =  [];
         var buffers = {};

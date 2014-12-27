@@ -45,3 +45,22 @@ BufferLoader.prototype.load = function() {
   this.loadBuffer(this.urlList[i], i);
 }
 
+function loadBuffers(buffers) {
+  // Array-ify
+  var names = [];
+  var paths = [];
+  for (var name in buffers) {
+    var path = buffers[name];
+    names.push(name);
+    paths.push(path);
+  }
+  bufferLoader = new BufferLoader(context, paths, function(bufferList) {
+    for (var i = 0; i < bufferList.length; i++) {
+      var buffer = bufferList[i];
+      var name = names[i];
+      BUFFERS[name] = buffer;
+    }
+    $('#playBtn').removeAttr('disabled');
+  });
+  bufferLoader.load();
+}

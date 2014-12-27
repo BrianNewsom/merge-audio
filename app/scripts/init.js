@@ -4,14 +4,16 @@ var BUFFERS = {};
 var context = null;
 
 // An object to track the buffers to load {name: path}
+/*
 var BUFFERS_TO_LOAD = {
   gagaVox: 'res/paparazzi/LeadVocals.mp3',
   gagaPerc: 'res/paparazzi/Percussions.mp3',
   gagaSynth1: 'res/paparazzi/Synth1.mp3'
 };
+*/
 
 // Loads all sound samples into the buffers object.
-function loadBuffers() {
+function loadBuffers(BUFFERS_TO_LOAD) {
   // Array-ify
   var names = [];
   var paths = [];
@@ -30,16 +32,14 @@ function loadBuffers() {
   });
   bufferLoader.load();
 }
-
+/*
 document.addEventListener('DOMContentLoaded', function() {
   try {
     // Fix up prefixing
-    window.AudioContext = window.AudioContext || window.webkitAudioContext;
-    context = new AudioContext();
   }
   catch(e) {
     alert("Web Audio API is not supported in this browser");
   }
   loadBuffers();
 });
-
+*/

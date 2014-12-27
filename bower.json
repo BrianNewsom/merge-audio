@@ -3,7 +3,8 @@
   "private": true,
   "dependencies": {
     "bootstrap": "~3.2.0",
-    "jquery" : "latest",
-    "parse" : "latest"
+    "jquery": "latest",
+    "parse": "latest",
+    "dropzone": "~3.12.0"
   }
 }

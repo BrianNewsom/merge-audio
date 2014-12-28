@@ -65,29 +65,58 @@ app.post('/file-upload', function(req, resp, next) {
         } else {
             req.body[fieldname] = val;
         }
-      });
+    });
 
-      req.busboy.on('finish', function(){
-          outObj['name'] = req.body.stemName;
-          parseStore('Stem',outObj);
-          resp.json(outObj);
-      });
+    req.busboy.on('finish', function(){
+        outObj['name'] = req.body.stemName;
+        parseStore('Stem',outObj, function(id){
+            // Store stem object in parse
+            var Track = Parse.Object.extend('Track');
+            var query = new Parse.Query(Track);
+            query.equalTo("name", req.body.track)
+            query.first({
+                success: function(object){
+                    if (object == undefined){
+                        // No matching track found - create track w/ only thisstem
+                        var newTrack = {};
+                        newTrack['name'] = req.body.track;
+                        newTrack['author'] = 'unknown';
+                        newTrack['stems'] = [id];
+                        parseStore('Track',newTrack, function(id) { console.log('new track stored');});
+                    } else {
+                        // If we find a matching track, append this stem.
+                        var stems = object.get('stems');
+                        stems.push(id);
+                        object.set('stems',stems);
+                        object.save();
+                    }
+                },
+                error: function(err){
+                    console.log(err);
+                }
+            });
+        });
+        resp.json(outObj);
+    });
 });
 
-function parseStore(type,_obj){
+function parseStore(type,_obj, callback){
     var Obj = Parse.Object.extend(type);
     var obj = new Obj();
     obj.save(_obj, {
         success: function(obj){
-            console.log('successfully saved');
-            console.log(obj);
+            console.log(obj['id']);
         },
         error: function(obj, err){
             console.log(err);
         }
+    }).then(function() {
+        callback(obj['id']);
     });
-    return 0;
+
 }
+
+
 /*
 app.get('/sign_s3', function(req, res){
     aws.config.update({accessKeyId: AWS_ACCESS_KEY, secretAccessKey: AWS_SECRET_KEY});

@@ -27,5 +27,12 @@
   },
   "engines": {
     "node": ">=0.10.0"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.1.4",
+    "body-parser": "^1.10.0",
+    "connect-busboy": "0.0.2",
+    "express": "^4.10.6",
+    "fs-extra": "^0.13.0"
   }
 }

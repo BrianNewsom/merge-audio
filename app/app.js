@@ -116,7 +116,41 @@ function parseStore(type,_obj, callback){
 
 }
 
+// Simple view engine
+app.set('views', __dirname);
+app.engine('html',require('ejs').renderFile);
+app.set('view engine','ejs');
 
+app.get('/addstem',function(req,res){
+    res.render('addstem.html');
+});
+
+app.get('/mixer',function(req,res){
+    res.render('mixer.html');
+});
+
+app.get('/getAllTracks', function(req, res){
+    parseGetAll('Track', function(allTracks){
+        res.send(allTracks);
+    });
+});
+
+function parseGetAll(type, callback){
+    var query = new Parse.Query(type);
+    var all = [];
+    query.find({
+        success: function(results){
+            for (var i = 0 ; i < results.length ; i++){
+                all.push(results[i].get('name'));
+            }
+        },
+        error: function(err){
+            console.log(err);
+        }
+    }).then( function(){
+        callback(all);
+    });
+}
 /*
 app.get('/sign_s3', function(req, res){
     aws.config.update({accessKeyId: AWS_ACCESS_KEY, secretAccessKey: AWS_SECRET_KEY});

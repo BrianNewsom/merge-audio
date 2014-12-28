@@ -1,5 +1,5 @@
 Parse.initialize("s4ZaCLGhg6RCEoQvnxLgQ6Pks1jaIHwEcEH4vC4y", "BhMJzuLaOFee060SkjVohAA7hWCh0Z9geG7Cs2wl");
-
+var BUCKET_URL = 'https://s3-us-west-2.amazonaws.com/briannewsomsongs/';
 var trackName = document.URL.split('?track=')[1];
 query = new Parse.Query('Track')
 
@@ -31,7 +31,7 @@ query.find({
                 for (var i = 0 ; i < len ; i++){
                     // TODO: Return whole object and do more than just use url.
                     var current = arguments[i].attributes;
-                    buffers[current.name] = current.url;
+                    buffers[current.name] = BUCKET_URL + current.filename;
                     stems.push(current.name);
                 }
             }).then(function(){

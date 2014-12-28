@@ -30,3 +30,4 @@ function storeStem(_stem){
         console.log('Ill defined stem');
     }
 }
+

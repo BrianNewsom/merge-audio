@@ -6,8 +6,10 @@ var busboy = require('connect-busboy'); //middleware for form/file upload
 var path = require('path');
 var fs = require('fs-extra');
 var aws = require('aws-sdk');
+var Parse = require('parse').Parse;
 /* REMOVEEEEEE */
 aws.config.loadFromPath('./config.json');
+Parse.initialize("s4ZaCLGhg6RCEoQvnxLgQ6Pks1jaIHwEcEH4vC4y", "BhMJzuLaOFee060SkjVohAA7hWCh0Z9geG7Cs2wl");
 
 var app = express();
 
@@ -27,12 +29,14 @@ function StartServer() {
 StartServer()
 
 // Receive notifications for organization wallet
-app.post('/file-upload', function(req, resp) {
+app.post('/file-upload', function(req, resp, next) {
     // TODO: There's got to be a better way to do this....
     var s3 = new aws.S3({ params: {Bucket: 'briannewsomsongs'} });
     var fstream;
+    var outObj = {};
     req.pipe(req.busboy);
     req.busboy.on('file', function (fieldname,file,filename){
+        outObj['filename'] = filename.replace(' ','+');
         var filePath = __dirname + '/audio/' + filename;
         fstream = fs.createWriteStream(filePath);
         file.pipe(fstream);
@@ -49,11 +53,41 @@ app.post('/file-upload', function(req, resp) {
                     }
                 })
             })
-            resp.redirect('back');
         });
     });
+    req.busboy.on('field', function(fieldname,val){
+        if (req.body.hasOwnProperty(fieldname)) {
+            if (Array.isArray(req.body[fieldname])) {
+                req.body[fieldname].push(val);
+            } else {
+                req.body[fieldname] = [req.body[fieldname], val];
+            }
+        } else {
+            req.body[fieldname] = val;
+        }
+      });
+
+      req.busboy.on('finish', function(){
+          outObj['name'] = req.body.stemName;
+          parseStore('Stem',outObj);
+          resp.json(outObj);
+      });
 });
 
+function parseStore(type,_obj){
+    var Obj = Parse.Object.extend(type);
+    var obj = new Obj();
+    obj.save(_obj, {
+        success: function(obj){
+            console.log('successfully saved');
+            console.log(obj);
+        },
+        error: function(obj, err){
+            console.log(err);
+        }
+    });
+    return 0;
+}
 /*
 app.get('/sign_s3', function(req, res){
     aws.config.update({accessKeyId: AWS_ACCESS_KEY, secretAccessKey: AWS_SECRET_KEY});

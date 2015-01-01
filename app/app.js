@@ -74,32 +74,43 @@ app.post('/file-upload', function(req, resp, next) {
             var Track = Parse.Object.extend('Track');
             var query = new Parse.Query(Track);
             query.equalTo("name", req.body.track)
-            query.first({
-                success: function(object){
-                    if (object == undefined){
-                        // No matching track found - create track w/ only thisstem
-                        var newTrack = {};
-                        newTrack['name'] = req.body.track;
-                        newTrack['author'] = 'unknown';
-                        newTrack['stems'] = [id];
-                        parseStore('Track',newTrack, function(id) { console.log('new track stored');});
-                    } else {
-                        // If we find a matching track, append this stem.
-                        var stems = object.get('stems');
-                        stems.push(id);
-                        object.set('stems',stems);
-                        object.save();
-                    }
-                },
-                error: function(err){
-                    console.log(err);
-                }
+            createTrack(req.body.track,'unknown', [id], function(existingTrack){
+                var stems = existingTrack.get('stems');
+                stems.push(id);
+                existingTrack.set('stems',stems);
+                existingTrack.save();
             });
         });
         resp.json(outObj);
     });
 });
 
+function createTrack(name, author, stems, callback){
+    // callback occurs when track exists
+    var Track = Parse.Object.extend('Track');
+    var query = new Parse.Query(Track);
+    query.equalTo("name", name)
+    query.first({
+        success: function(object){
+            if (object == undefined){
+                // No matching track found - create track
+                var newTrack = {};
+                newTrack['name'] = name;
+                newTrack['author'] = author;
+                newTrack['stems'] = stems;
+                parseStore('Track',newTrack, function(id) { console.log('new track stored');});
+            } else {
+                // Track exists, handle.
+                console.log('Track exists');
+                callback(object);
+            }
+        },
+        error: function(err){
+            console.log(err);
+        }
+    });
+
+}
 function parseStore(type,_obj, callback){
     var Obj = Parse.Object.extend(type);
     var obj = new Obj();
@@ -129,19 +140,20 @@ app.get('/mixer',function(req,res){
     res.render('mixer.html');
 });
 
-app.get('/getAllTracks', function(req, res){
-    parseGetAll('Track', function(allTracks){
-        res.send(allTracks);
+app.get('/getTracks/:max', function(req, res){
+    parseGet('Track', req.param("max"), function(tracks){
+        res.send(tracks);
     });
 });
 
-function parseGetAll(type, callback){
+function parseGet(type, max, callback){
     var query = new Parse.Query(type);
+    query.limit(max);
     var all = [];
     query.find({
         success: function(results){
             for (var i = 0 ; i < results.length ; i++){
-                all.push(results[i].get('name'));
+                all.push(results[i]);
             }
         },
         error: function(err){
@@ -151,29 +163,3 @@ function parseGetAll(type, callback){
         callback(all);
     });
 }
-/*
-app.get('/sign_s3', function(req, res){
-    aws.config.update({accessKeyId: AWS_ACCESS_KEY, secretAccessKey: AWS_SECRET_KEY});
-    var s3 = new aws.S3();
-    var s3_params = {
-        Bucket: S3_BUCKET,
-        Key: req.query.s3_object_name,
-        Expires: 60,
-        ContentType: req.query.s3_object_type,
-        ACL: 'public-read'
-    };
-    s3.getSignedUrl('putObject', s3_params, function(err, data){
-        if(err){
-            console.log(err);
-        }
-        else{
-            var return_data = {
-                signed_request: data,
-                url: 'https://'+S3_BUCKET+'.s3.amazonaws.com/'+req.query.s3_object_name
-            };
-            res.write(JSON.stringify(return_data));
-            res.end();
-        }
-    });
-});
-*/

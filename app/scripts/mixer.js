@@ -26,7 +26,7 @@ Mixer.playAll = function(allBuffers) {
         var gainNode = context.createGain ? context.createGain() : context.createGainNode();
         source.buffer = buffer;
         // Turn on looping
-        source.loop = true;
+        source.loop = false;
         // Connect source to gain.
         source.connect(gainNode);
         // Connect gain to destination.
@@ -42,6 +42,7 @@ Mixer.playAll = function(allBuffers) {
 Mixer.play = function() {
   // Create two sources.
   var buffs = [];
+  //var gains = [];
   for (var i = 0 ; i < this.stems.length ; i++){
     buffs.push(BUFFERS[this.stems[i]]);
   }
@@ -89,7 +90,7 @@ Mixer.init = function(stems) {
         // Set as disabled until loaded
         outStr = '<p><input type="button" id="playBtn" onclick="Mixer.toggle();" value="Play/Pause" disabled/></p>';
         for (var i = 0 ; i < len ; i++){
-            outStr = outStr + '<p>' + this.stems[i] + '<input type="range" min="0" max="100" value="50" oninput="Mixer.changeVol(this,' + String(i) + ');" /> </p>';
+            outStr = outStr + '<p>' + this.stems[i] + '<input type="range" min="0" max="100" value="50" oninput="Mixer.changeVol(this,' + String(i) + ');" id="track' + String(i) + '"/> </p>';
         }
     }
     $('#mixer').html(outStr);
